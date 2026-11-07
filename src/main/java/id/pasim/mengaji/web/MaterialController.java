@@ -1,0 +1,9 @@
+package id.pasim.mengaji.web;
+import id.pasim.mengaji.domain.*;import id.pasim.mengaji.repo.*;import jakarta.servlet.http.HttpServletRequest;import jakarta.validation.Valid;import org.springframework.http.HttpStatus;import org.springframework.http.ResponseEntity;import org.springframework.web.bind.annotation.*;import org.springframework.web.server.ResponseStatusException;import java.util.*;
+@RestController @RequestMapping("/api/materials") public class MaterialController {
+ private final MaterialRepository materials;private final ProgramRepository programs;public MaterialController(MaterialRepository m,ProgramRepository p){materials=m;programs=p;}
+ @GetMapping public List<Material> list(HttpServletRequest req){CurrentUser.get(req);return materials.findAllByOrderByCreatedAtDesc();}
+ @PostMapping public Material create(@Valid @RequestBody ApiDtos.MaterialRequest r,HttpServletRequest req){CurrentUser.require(CurrentUser.get(req),Role.PENGURUS,Role.ADMIN);var p=programs.findById(r.programId()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));return materials.save(new Material(p,r.title(),r.body(),r.resourceUrl()));}
+ @PutMapping("/{id}") public Material update(@PathVariable UUID id,@Valid @RequestBody ApiDtos.MaterialRequest r,HttpServletRequest req){CurrentUser.require(CurrentUser.get(req),Role.PENGURUS,Role.ADMIN);var m=materials.findById(id).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));var p=programs.findById(r.programId()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));m.update(p,r.title(),r.body(),r.resourceUrl());return materials.save(m);}
+ @DeleteMapping("/{id}") public ResponseEntity<?> delete(@PathVariable UUID id,HttpServletRequest req){CurrentUser.require(CurrentUser.get(req),Role.PENGURUS,Role.ADMIN);var m=materials.findById(id).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));materials.delete(m);return ResponseEntity.noContent().build();}
+}
