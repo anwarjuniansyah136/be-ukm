@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: optional:file:../.env[.properties],optional:file:.env[.properties]
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3100/pasim_mengaji?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Jakarta}
     username: ${SPRING_DATASOURCE_USERNAME:pasim}
@@ -13,6 +15,25 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
   flyway:
     enabled: false
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 60MB
+  mail:
+    host: ${SPRING_MAIL_HOST:smtp.gmail.com}
+    port: ${SPRING_MAIL_PORT:587}
+    username: ${SPRING_MAIL_USERNAME:ukmpasimmengaji@gmail.com}
+    password: ${SPRING_MAIL_PASSWORD:gsay wqrq jvdq awoi}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 server:
   port: ${PORT:8089}
   error:
@@ -24,3 +45,5 @@ app:
   jwt:
     secret: ${APP_JWT_SECRET:change-this-secret-to-at-least-32-characters}
     expiration-hours: 24
+  mail:
+    from: ${APP_MAIL_FROM:${spring.mail.username}}

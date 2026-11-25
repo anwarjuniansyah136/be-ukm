@@ -61,6 +61,40 @@ public class ProgramController {
         if (!p.isActive()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Program tidak aktif");
         }
+
+        // Req 3: Halaqah diikuti seluruh anggota tanpa batasan; program utama (Tahlil/Tahfidz) hanya boleh 1 hingga selesai
+        if (p.getType() != ProgramType.HALAQAH) {
+            MemberStatus st = a.getMemberStatus();
+            if (p.getType() == ProgramType.TAHFIDZ && st == MemberStatus.AKTIF_TAHLIL) {
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "Anggota hanya boleh mengikuti 1 program utama. Selesaikan program Tahlil terlebih dahulu sebelum mengikuti Tahfidz."
+                );
+            }
+            if (p.getType() == ProgramType.TAHLIL && (
+                    st == MemberStatus.MENUNGGU_TES_TAHFIDZ
+                    || st == MemberStatus.MEMILIH_TARGET_TAHFIDZ
+                    || st == MemberStatus.MENUNGGU_APPROVAL_DURASI
+                    || st == MemberStatus.AKTIF_TAHFIDZ
+            )) {
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "Anda sedang mengikuti program Tahfidz. Selesaikan program Tahfidz terlebih dahulu sebelum mengambil program lain."
+                );
+            }
+            boolean joinedOtherMainProgram = programs.findAllByOrderByCreatedAtDesc().stream()
+                    .anyMatch(other -> !other.getId().equals(p.getId())
+                            && other.getType() != ProgramType.HALAQAH
+                            && other.getType() != p.getType()
+                            && other.getParticipants().contains(a.getId()));
+            if (joinedOtherMainProgram && st != MemberStatus.LULUS_TAHLIL && st != MemberStatus.LULUS_TAHFIDZ) {
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "Anggota hanya diperbolehkan mengikuti 1 program utama hingga selesai (kecuali Halaqah)."
+                );
+            }
+        }
+
         p.join(a.getId());
         return programs.save(p);
     }

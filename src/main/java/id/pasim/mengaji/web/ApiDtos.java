@@ -10,7 +10,13 @@ public class ApiDtos {
             @NotBlank @Size(max=180) String name,
             @Email @NotBlank @Size(max=255) String email,
             @NotBlank @Size(min=8,max=72) String password,
-            @NotNull Role requestedRole
+            Role requestedRole,
+            ProgramType requestedProgram,
+            @Size(max=180) String testSurah,
+            Integer testAyatStart,
+            Integer testAyatEnd,
+            @Size(max=1000) String testRecordingUrl,
+            @Size(max=2000) String testNote
     ) {}
 
     public record LoginRequest(
@@ -24,6 +30,7 @@ public class ApiDtos {
             String email,
             Role role,
             Role requestedRole,
+            ProgramType requestedProgram,
             RegistrationStatus status,
             MemberStatus memberStatus,
             String phone,
@@ -40,6 +47,7 @@ public class ApiDtos {
                     u.getEmail(),
                     u.getRole(),
                     u.getRequestedRole(),
+                    u.getRequestedProgram(),
                     u.getStatus(),
                     u.getMemberStatus(),
                     u.getPhone(),
@@ -137,8 +145,45 @@ public class ApiDtos {
         }
     }
 
+    public record TahlilTaskRequest(
+            UUID programId,
+            UUID memberId,
+            @NotBlank @Size(max=200) String title,
+            @Size(max=2000) String instruction,
+            @NotNull LocalDate dueDate
+    ) {}
+
+    public record TahlilTaskView(
+            UUID id,
+            UUID programId,
+            String programName,
+            UUID memberId,
+            String memberName,
+            String title,
+            String instruction,
+            LocalDate dueDate,
+            String createdByName,
+            Instant createdAt
+    ) {
+        public static TahlilTaskView of(TahlilTask t) {
+            return new TahlilTaskView(
+                    t.getId(),
+                    t.getProgramId(),
+                    t.getProgram() != null ? t.getProgram().getName() : "Program Tahlil",
+                    t.getMemberId(),
+                    t.getMember() != null ? t.getMember().getName() : "Semua Anggota Tahlil",
+                    t.getTitle(),
+                    t.getInstruction(),
+                    t.getDueDate(),
+                    t.getCreatedBy() != null ? t.getCreatedBy().getName() : "Pengurus",
+                    t.getCreatedAt()
+            );
+        }
+    }
+
     public record SubmissionRequest(
             UUID taskId,
+            UUID tahlilTaskId,
             UUID programId,
             ProgramType programType,
             @Size(max=3000) String note,
@@ -154,6 +199,7 @@ public class ApiDtos {
     public record SubmissionView(
             UUID id,
             UUID taskId,
+            UUID tahlilTaskId,
             UUID programId,
             ProgramType programType,
             String programName,
@@ -172,6 +218,8 @@ public class ApiDtos {
             String progName = "";
             if (s.getTask() != null) {
                 progName = "Tahfidz - " + s.getTask().getSurah() + " (" + s.getTask().getAyatStart() + "-" + s.getTask().getAyatEnd() + ")";
+            } else if (s.getTahlilTask() != null) {
+                progName = "Tahlil - " + s.getTahlilTask().getTitle();
             } else if (s.getProgram() != null) {
                 progName = s.getProgram().getName();
             } else if (s.getProgramType() == ProgramType.TAHLIL) {
@@ -180,6 +228,7 @@ public class ApiDtos {
             return new SubmissionView(
                     s.getId(),
                     s.getTaskId(),
+                    s.getTahlilTaskId(),
                     s.getProgramId(),
                     s.getProgramType(),
                     progName,

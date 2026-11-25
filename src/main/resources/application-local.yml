@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: optional:file:../.env[.properties],optional:file:.env[.properties]
   datasource:
     url: jdbc:h2:file:./data/pasim_mengaji;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
     username: sa
@@ -13,6 +15,25 @@ spring:
     open-in-view: false
   flyway:
     enabled: false
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 60MB
+  mail:
+    host: ${SPRING_MAIL_HOST:smtp.gmail.com}
+    port: ${SPRING_MAIL_PORT:587}
+    username: ${SPRING_MAIL_USERNAME:ukmpasimmengaji@gmail.com}
+    password: ${SPRING_MAIL_PASSWORD:gsay wqrq jvdq awoi}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 server:
   port: 8080
 app:
@@ -22,3 +43,5 @@ app:
   jwt:
     secret: rahasia-jwt-token-ukm-pasim-mengaji-2026-minimal-32-karakter
     expiration-hours: 24
+  mail:
+    from: ${APP_MAIL_FROM:${spring.mail.username}}

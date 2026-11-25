@@ -15,6 +15,10 @@ public class Submission {
     @JoinColumn(name="task_id", nullable=true)
     private HafalanTask task;
 
+    @ManyToOne(optional=true)
+    @JoinColumn(name="tahlil_task_id", nullable=true)
+    private TahlilTask tahlilTask;
+
     @ManyToOne
     @JoinColumn(name="program_id")
     private Program program;
@@ -83,6 +87,9 @@ public class Submission {
     public UUID getId() { return id; }
     public UUID getTaskId() { return task != null ? task.getId() : null; }
     public HafalanTask getTask() { return task; }
+    public UUID getTahlilTaskId() { return tahlilTask != null ? tahlilTask.getId() : null; }
+    public TahlilTask getTahlilTask() { return tahlilTask; }
+    public void setTahlilTask(TahlilTask tahlilTask) { this.tahlilTask = tahlilTask; }
     public UUID getProgramId() { return program != null ? program.getId() : (task != null ? task.getProgramId() : null); }
     public Program getProgram() { return program; }
     public ProgramType getProgramType() { return programType != null ? programType : (task != null ? ProgramType.TAHFIDZ : ProgramType.TAHLIL); }

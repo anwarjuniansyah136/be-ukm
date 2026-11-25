@@ -1,11 +1,13 @@
 package id.pasim.mengaji.web;
 
 import id.pasim.mengaji.domain.*;
+import id.pasim.mengaji.repo.TahfidzAuditionRepository;
 import id.pasim.mengaji.repo.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -16,10 +18,12 @@ import java.util.*;
 public class AdminController {
     private final UserRepository users;
     private final PasswordEncoder passwordEncoder;
+    private final TahfidzAuditionRepository auditions;
 
-    public AdminController(UserRepository users, PasswordEncoder passwordEncoder) {
+    public AdminController(UserRepository users, PasswordEncoder passwordEncoder, TahfidzAuditionRepository auditions) {
         this.users = users;
         this.passwordEncoder = passwordEncoder;
+        this.auditions = auditions;
     }
 
     @GetMapping("/users")
@@ -35,6 +39,7 @@ public class AdminController {
     }
 
     @PatchMapping("/registrations/{id}")
+    @Transactional
     public ApiDtos.UserView decide(@PathVariable UUID id, @RequestBody Map<String, String> body, HttpServletRequest req) {
         var actor = CurrentUser.get(req);
         CurrentUser.require(actor, Role.ADMIN, Role.PENGURUS);
@@ -42,7 +47,7 @@ public class AdminController {
         if (user.getStatus() != RegistrationStatus.PENDING) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Pendaftaran sudah diproses");
         }
-        if (actor.getRole() == Role.PENGURUS && user.getRequestedRole() != Role.ANGGOTA) {
+        if (actor.getRole() == Role.PENGURUS && user.getRequestedRole() == Role.PENGURUS) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Hanya Admin yang berwenang menyetujui calon Pengurus");
         }
         String statusStr = body.getOrDefault("status", "").toUpperCase();
@@ -50,13 +55,52 @@ public class AdminController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status tidak valid");
         }
         boolean approve = "APPROVED".equals(statusStr);
-        Role assignedRole = user.getRequestedRole();
-        if (actor.getRole() == Role.ADMIN && body.containsKey("role") && !body.get("role").isBlank()) {
-            try {
-                assignedRole = Role.valueOf(body.get("role").toUpperCase());
-            } catch (Exception ignored) {}
+
+        if (!approve) {
+            // Ditolak: role tetap null (belum ditetapkan)
+            user.decide(null, RegistrationStatus.REJECTED);
+            auditions.findFirstByMember_IdOrderByCreatedAtDesc(user.getId()).ifPresent(a -> {
+                if (a.getStatus() == AuditionStatus.MENUNGGU_REVIEW) {
+                    a.review(actor, AuditionStatus.DITOLAK, body.getOrDefault("reviewNote", "Pendaftaran ditolak"));
+                    auditions.save(a);
+                }
+            });
+            return ApiDtos.UserView.of(users.save(user));
         }
-        user.decide(approve ? assignedRole : Role.ANGGOTA, approve ? RegistrationStatus.APPROVED : RegistrationStatus.REJECTED);
+
+        // Penetapan role dilakukan saat approval (sebelumnya role null / belum jelas)
+        Role assignedRole = user.getRequestedRole() != null ? user.getRequestedRole() : Role.ANGGOTA;
+        if (body.containsKey("role") && body.get("role") != null && !body.get("role").isBlank()) {
+            try {
+                Role requestedAssign = Role.valueOf(body.get("role").toUpperCase());
+                if (actor.getRole() == Role.PENGURUS && requestedAssign != Role.ANGGOTA) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Pengurus hanya dapat menetapkan role Anggota");
+                }
+                assignedRole = requestedAssign;
+            } catch (IllegalArgumentException ex) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role tidak valid");
+            }
+        }
+
+        user.decide(assignedRole, RegistrationStatus.APPROVED);
+
+        // Jika disetujui sebagai ANGGOTA dan mendaftar jalur Tahfidz (sudah ikut tes 1-3 ayat saat pendaftaran awal)
+        if (assignedRole == Role.ANGGOTA && user.getRequestedProgram() == ProgramType.TAHFIDZ) {
+            String tahfidzDecision = body.getOrDefault("tahfidzDecision", "APPROVED_TAHFIDZ").toUpperCase();
+            boolean passTahfidz = !"DIRECT_TO_TAHLIL".equals(tahfidzDecision);
+            String note = body.getOrDefault("reviewNote",
+                    passTahfidz ? "Tes bacaan 1–3 ayat pendaftaran awal disetujui. Silakan pilih target hafalan."
+                            : "Disarankan mengikuti program Tahlil terlebih dahulu.");
+
+            auditions.findFirstByMember_IdOrderByCreatedAtDesc(user.getId()).ifPresent(a -> {
+                a.review(actor, passTahfidz ? AuditionStatus.DISETUJUI : AuditionStatus.DITOLAK, note);
+                auditions.save(a);
+            });
+            user.updateMemberStatus(passTahfidz ? MemberStatus.MEMILIH_TARGET_TAHFIDZ : MemberStatus.AKTIF_TAHLIL);
+        } else if (assignedRole == Role.ANGGOTA) {
+            user.updateMemberStatus(MemberStatus.AKTIF_TAHLIL);
+        }
+
         return ApiDtos.UserView.of(users.save(user));
     }
 

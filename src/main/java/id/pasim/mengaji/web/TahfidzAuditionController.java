@@ -104,6 +104,11 @@ public class TahfidzAuditionController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Harap selesaikan program Tahlil terlebih dahulu sebelum mengikuti tes Tahfidz");
         }
 
+        int ayatCount = req.ayatEnd() - req.ayatStart() + 1;
+        if (req.ayatStart() < 1 || ayatCount < 1 || ayatCount > 3) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tes bacaan Tahfidz wajib terdiri dari 1 sampai 3 ayat (maksimal 3 ayat)");
+        }
+
         var audition = new TahfidzAudition(
                 actor,
                 req.surah().trim(),

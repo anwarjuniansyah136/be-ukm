@@ -1,5 +1,6 @@
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/PasimMengajiApplication.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/config/BootstrapAdmin.java
+/Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/config/SchemaCompatibilityRunner.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/config/SecurityConfig.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/config/WebConfig.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/domain/Activity.java
@@ -17,6 +18,7 @@
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/domain/Submission.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/domain/SubmissionStatus.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/domain/TahfidzAudition.java
+/Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/domain/TahlilTask.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/domain/UserAccount.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/repo/ActivityRepository.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/repo/HafalanTaskRepository.java
@@ -26,9 +28,11 @@
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/repo/ProgramRepository.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/repo/SubmissionRepository.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/repo/TahfidzAuditionRepository.java
+/Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/repo/TahlilTaskRepository.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/repo/UserRepository.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/security/JwtFilter.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/security/JwtService.java
+/Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/service/MailService.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/service/SubmissionService.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/service/TaskService.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/web/ActivityController.java
@@ -37,6 +41,7 @@
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/web/ApiErrors.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/web/AuthController.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/web/CurrentUser.java
+/Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/web/FileUploadController.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/web/HalaqahController.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/web/HealthController.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/web/MaterialController.java
@@ -44,4 +49,5 @@
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/web/ProgramController.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/web/SubmissionController.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/web/TahfidzAuditionController.java
+/Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/web/TahlilTaskController.java
 /Users/macbook/Documents/Codex/ragil/buat/outputs/pasim-mengaji/backend/src/main/java/id/pasim/mengaji/web/TaskController.java

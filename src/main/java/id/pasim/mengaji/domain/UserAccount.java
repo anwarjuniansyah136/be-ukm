@@ -21,7 +21,7 @@ public class UserAccount {
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable=false)
+    @Column(nullable=true, length=32)
     private Role role;
 
     @Enumerated(EnumType.STRING)
@@ -29,8 +29,12 @@ public class UserAccount {
     private RegistrationStatus status;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable=false)
+    @Column(nullable=true, length=32)
     private Role requestedRole;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable=true, length=32)
+    private ProgramType requestedProgram;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false)
@@ -72,6 +76,7 @@ public class UserAccount {
     public Role getRole() { return role; }
     public RegistrationStatus getStatus() { return status; }
     public Role getRequestedRole() { return requestedRole; }
+    public ProgramType getRequestedProgram() { return requestedProgram; }
     public MemberStatus getMemberStatus() { return memberStatus != null ? memberStatus : MemberStatus.AKTIF_TAHLIL; }
     public String getPhone() { return phone; }
     public String getNim() { return nim; }
@@ -89,6 +94,10 @@ public class UserAccount {
 
     public void updateMemberStatus(MemberStatus memberStatus) {
         this.memberStatus = memberStatus;
+    }
+
+    public void setRequestedProgram(ProgramType requestedProgram) {
+        this.requestedProgram = requestedProgram;
     }
 
     public void updateProfile(String name, String phone, String nim, String prodi, String bio, String avatarUrl) {

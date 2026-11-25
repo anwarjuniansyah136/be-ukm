@@ -33,7 +33,7 @@ public class SecurityConfig {
                                 "/api/auth/reset-password",
                                 "/api/health"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/activities").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/activities", "/api/tahfidz/test/random-ayat", "/api/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/programs", "/api/materials", "/api/tasks", "/api/submissions", "/api/activities/**").authenticated()
                         .anyRequest().authenticated()
                 )
